@@ -1,0 +1,9 @@
+{
+  "name": "create-factory-helper",
+  "version": "0.1.0",
+  "description": "A helper function to create factory extended with hooks",
+  "main": "lib/index.js",
+  "repository": "https://github.com/thephoenixofthevoid/create-factory-helper.git",
+  "author": "Phoenix The Fallen <thephoenixofthevoid@gmail.com>",
+  "license": "MIT"
+}
