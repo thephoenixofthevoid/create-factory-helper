@@ -1,11 +1,11 @@
-import { createFactory } from "../src"
+import { createFactory } from "../"
 
 const factory1 = createFactory(Map)
-
-factory1.after(function (state) {
-    this.id = Math.random()
-    this.set("hi", "there");
-})
+    .after(function (state) {
+       this.id = Math.random()
+       this.set("hi", "there");
+    })
+    .lock()
 
 const m1 = factory1();
 const m2 = factory1();

@@ -4,39 +4,50 @@ function error(msg){ return () => { throw new Error(msg) } }
 const tooLate = error("Factory hooks can only be defined before the first instance is created");
 const tooFast = error("Lock hooks before the the first instance is created");
 
-export function createFactory(ctor, ...args1) {
-    
-    const before = [];
-    const after  = [];
+interface Factory {
+    call(...args): any;
+    before(...hooks): this;
+    after(...hooks): this;
+    lock(): this;
+}
 
+export function createFactory(ctor, ...args1): Factory {
+    
+    const _before = [];
+    const _after  = [];
     let locked = false;
 
-    return Object.assign(factory, {
-        before(...hooks) {
-           if (locked) tooLate()
-           before.push(...hooks); 
-           return factory; 
-        }, 
-        after (...hooks) {  
-           if (locked) tooLate()
-           after.push(...hooks); 
-           return factory; 
-        }, 
-        lock() {
-           locked = true;
-           return factory; 
-        }
-    })
+    
+    const factory = Object.assign(_factory, { before, after, lock })
+    return factory;
 
-    function factory(...args2) {
+    function _factory(...args2) {
         if (!locked) tooFast()
 
         const state = { args: [ ...args1, ...args2 ], inst: null };
 
-        before.forEach(hook => hook.call(null, state))
+        _before.forEach(hook => hook.call(null, state))
         const inst = state.inst = new ctor(...state.args);
-        after.forEach(hook => hook.call(inst, state, inst))
+        _after.forEach(hook => hook.call(inst, state, inst))
 
         return inst
     }
+
+    function before (...hooks) {
+        if (locked) tooLate()
+        _before.push(...hooks);
+        return factory; 
+    }
+
+    function after (...hooks) {
+        if (locked) tooLate()
+        _after.push(...hooks); 
+        return factory; 
+    }
+
+    function lock() {
+        locked = true;
+        return factory; 
+     }
+    
 }
